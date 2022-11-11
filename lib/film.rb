@@ -1,13 +1,13 @@
 class Film
   attr_reader :title, :director, :year
 
-  def initialize(title, director, year)
-    @title = title
-    @director = director
-    @year = year
+  def initialize(args)
+    @title = args[:title]
+    @director = args[:director]
+    @year = args[:year]
   end
 
-  def full_info
+  def to_s
     "#{@director} - #{@title} - (#{@year})"
   end
 end

@@ -1,26 +1,22 @@
+require "open-uri"
+require "nokogiri"
 require_relative "lib/film"
+require_relative "lib/film_collection"
 
-file_names = Dir["#{__dir__}/data/*.txt"]
-films = file_names.map do |file_name|
-  lines = File.readlines(file_name, chomp: true)
-  Film.new(lines[0], lines[1], lines[2])
-end
+URL = "https://ru.wikipedia.org/wiki/250_%D0%BB%D1%83%D1%87%D1%88%D0%B8%D1%85_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%BE%D0%B2_%D0%BF%D0%BE_%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8_IMDb"
+films = FilmCollection.from_url(URL)
 
-directors = films.map(&:director).uniq
+puts <<~GREETENGS
+Вас приветствует программа «Фильм на вечер»!
+Фильм какого режисера вы хотите сегодня посмотреть?
 
-puts "Программа «Фильм на вечер»"
+Список режисеров:
+GREETENGS
+
+films.directors.each.with_index(1) { |director, index| puts "#{index}. #{director}" }
 puts
-puts "Фильм какого режисера вы хотите сегодня посмотреть?"
-puts
-puts "Список режисеров:"
-
-directors.each.with_index(1) { |director, index| puts "#{index}. #{director}" }
-puts
-puts "Введите номер из списка:"
+puts "Введите номер режисера:"
 user_input = STDIN.gets.to_i
 puts
-
-director_films = films.find_all { |film| film.director == directors[user_input - 1] }
-
 puts "Сегодня вечером рекомендую посмотреть:"
-puts director_films.sample.full_info
+puts films.choose_film(films.directors[user_input - 1])
